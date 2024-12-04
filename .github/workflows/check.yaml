@@ -14,3 +14,29 @@ jobs:
 
       - name: Lint
         uses: cclauss/Find-Python-syntax-errors-action@master
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run pytest
+        uses: pavelzw/pytest-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.ANTON_TOKEN }}
+        with:
+          verbose: true
+          emoji: true
+          job-summary: true
+          custom-arguments: '-q'
+          click-to-expand: true
+          report-title: 'Test Report'
