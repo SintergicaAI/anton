@@ -1,0 +1,85 @@
+openapi: 3.0.0
+info:
+  title: Anton
+  description: Facilita la administración de servidores y servicios
+  version: 1.0.0
+paths:
+  /service:
+    get:
+      summary: Lista de servicios registrados
+      description: Lista de servicios actualmente registrados en el servidor
+      tags:
+        - Servicio
+      responses:
+        '200':
+          description: Informacion de los servicios registrados
+          content:
+            application/json:
+              schema:
+                type: object
+  '/service/{service_name}':
+    post:
+      summary: Crea un nuevo servicio
+      description: Registra un nuevo servicio para que sea ejecutado por un contenedor
+      tags:
+        - Servicio
+      parameters:
+        - name: image
+          description: Imagen de Docker a descargar para el servicio
+          in: query
+          schema:
+            type: string
+            title: Imagen de Docker
+            minLength: 0
+            example: alpine
+          required: true
+        - name: tag
+          description: Tag de la imagen de Docker a descargar
+          in: query
+          schema:
+            type: string
+            minLength: 0
+            example: latest
+          required: true
+        - name: iport
+          description: Puerto donde se expone el servicio dentro del contenedor
+          in: query
+          schema:
+            type: number
+            format: integer
+            minimum: 0
+            maximum: 65535
+            example: 42000
+          required: true
+        - name: eport
+          description: Puerto donde se expone el servicio a la red
+          in: query
+          schema:
+            type: number
+            format: integer
+            minimum: 0
+            maximum: 65535
+            example: 8080
+          required: true
+        - name: privileged
+          description: Indica si el contenedor debe correr en modo privilegiado
+          in: query
+          schema:
+            type: boolean
+            example: true
+          required: false
+      requestBody:
+        description: Variables de entorno para el contenedor
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                TOKEN: TOKEN_VALUE
+                PASSWORD: PASSWORD_VALUE
+      operationId: new_service
+      responses:
+        '200':
+          description: El servicio ha sido creado o esta en cola de creacion
+        '500':
+          description: Ha ocurrido un error creando el nuevo servicio
