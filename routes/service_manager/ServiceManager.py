@@ -4,6 +4,7 @@ from flask import Blueprint, request, Response
 
 service_routes = Blueprint("service_routes", __name__, url_prefix="/service")
 
+
 @service_routes.route("/<service_name>")
 def set_service(service_name: str):
     image_to_pull: str = request.args.get("image")
