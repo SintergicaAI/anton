@@ -1,3 +1,6 @@
+import json
+import mimetypes
+from http.client import OK, NOT_FOUND
 from typing import Optional
 
 import docker as dockerClient
@@ -10,13 +13,30 @@ service_routes = Blueprint("service_routes", __name__, url_prefix="/service")
 docker: DockerClient = dockerClient.from_env()
 
 
+@service_routes.get()
+def get_services():
+    info: dict = {}
+    containers: list[Container] = docker.containers.list()
+    for container in containers:
+        info[container.name] = {
+            "image": container.image.id,
+            "tag": container.image.tags[0],
+            "status": container.status
+        }
+    return Response(
+        json.dumps(info),
+        status=OK,
+        mimetype=mimetypes.types_map[".json"]
+    )
+
+
 @service_routes.post("/<service_name>")
 def set_service(service_name: str):
     image_to_pull: str = request.args.get("image")
     tag: str = request.args.get("tag")
     iport: str = request.args.get("iport")
     eport: str = request.args.get("eport")
-    privileged: bool = request.args.get("privileged") == "1"
+    privileged: bool = request.args.get("privileged", default="0") == "1"
     variables: dict = request.json
 
     new_image: Image = docker.images.pull(image_to_pull, tag=tag)
@@ -46,14 +66,14 @@ def set_service(service_name: str):
     if image_to_remove is not None:
         image_to_remove.remove()
 
-    return Response(status=200)
+    return Response(status=OK)
 
 
 @service_routes.delete("/stop/<service_name>")
 def stop_service(service_name: str):
     docker.containers.get(service_name).stop()
     print(">>> Stopped container")
-    return Response(status=200)
+    return Response(status=OK)
 
 
 @service_routes.delete("/rmi/<full_image_name>")
@@ -61,5 +81,5 @@ def remove_image(full_image_name: str):
     if docker.images.get(full_image_name) is not None:
         docker.images.remove(full_image_name)
         print(f">>> Removed image {full_image_name}")
-        return Response(status=200)
-    return Response(status=404)
+        return Response(status=OK)
+    return Response(status=NOT_FOUND)
