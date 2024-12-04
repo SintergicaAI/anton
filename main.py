@@ -3,10 +3,10 @@ import signal
 
 from flask import Flask, Response
 from flask_cors import CORS
-from routes.service_manager.ServiceManager import docker
+from routes.ServiceManager import docker
 
-from routes.repository_manager.RepositoryManager import repository_routes
-from routes.service_manager.ServiceManager import service_routes
+from routes.RepositoryManager import repository_routes
+from routes.ServiceManager import service_routes
 
 app = Flask(__name__)
 CORS(app, support_credentials=True)
