@@ -4,6 +4,10 @@ from flask import Blueprint, request, Response
 
 service_routes = Blueprint("service_routes", __name__, url_prefix="/service")
 
+
+
+
+
 @service_routes.route("/<service_name>")
 def set_service(service_name: str):
     image_to_pull: str = request.args.get("image")
@@ -38,9 +42,11 @@ def set_service(service_name: str):
     print(popen(run).read())
     return Response(status=200)
 
+
 @service_routes.get("/stop/<service_name>")
 def stop_service(service_name: str):
     print(popen(f'docker stop {service_name}'))
+
 
 @service_routes.get("/rmi/<full_image_name>")
 def remove_image(full_image_name: str):
