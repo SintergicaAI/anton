@@ -7,9 +7,9 @@ from docker import errors
 @pytest.fixture(scope="module")
 def docker() -> DockerClient:
     print("Openning docker connection")
-    docker: DockerClient = dockerClient.from_env()
-    yield docker
-    docker.close()
+    docker_instance: DockerClient = dockerClient.from_env()
+    yield docker_instance
+    docker_instance.close()
     print("Closing docker connection")
 
 
