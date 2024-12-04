@@ -12,6 +12,7 @@ from repo.GithubHandler import GithubHandler
 
 @pytest.fixture(scope="module")
 def handler():
+    print("Openning Github connection")
     handler = GithubHandler(os.environ.get("GITHUB_TOKEN"))
     yield handler
     handler.github.close()
