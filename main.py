@@ -3,6 +3,7 @@ import signal
 
 from flask import Flask, Response
 from flask_cors import CORS
+from routes.service_manager.ServiceManager import docker
 
 from routes.repository_manager.RepositoryManager import repository_routes
 from routes.service_manager.ServiceManager import service_routes
@@ -18,6 +19,7 @@ app.register_blueprint(repository_routes)
 
 @app.get('/kill')
 def kill():
+    docker.close()
     os.kill(os.getpid(), signal.SIGINT)
     return Response(
         'Server shutting down',

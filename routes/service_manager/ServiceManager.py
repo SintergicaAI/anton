@@ -1,11 +1,16 @@
-from os import popen
+from typing import Optional
 
+import docker as dockerClient
+from docker import DockerClient
+from docker.models.containers import Container
+from docker.models.images import Image
 from flask import Blueprint, request, Response
 
 service_routes = Blueprint("service_routes", __name__, url_prefix="/service")
+docker: DockerClient = dockerClient.from_env()
 
 
-@service_routes.route("/<service_name>")
+@service_routes.post("/<service_name>")
 def set_service(service_name: str):
     image_to_pull: str = request.args.get("image")
     tag: str = request.args.get("tag")
@@ -14,40 +19,47 @@ def set_service(service_name: str):
     privileged: bool = request.args.get("privileged") == "1"
     variables: dict = request.json
 
-    get_container_id: str = 'docker ps --filter "name=' + service_name + '" --format "{{.ID}}?{{.Image}}"'
+    new_image: Image = docker.images.pull(image_to_pull, tag=tag)
+    image_to_remove: Optional[Image] = None
 
-    print(popen(f'docker pull {image_to_pull}:{tag}').read())
-    response: list = popen(get_container_id).read().replace("\n", "").split("?")
-    print(response)
+    try:
+        running_container: Container = docker.containers.get(service_name)
+        image_to_remove = running_container.image
 
-    if len(response) == 2:
-        container_id: str = response[0]
-        image_to_delete: str = response[1]
+        running_container.stop()
+        running_container.remove()
+        print(f">>> Container {running_container.id} removed")
+    except docker.errors.NotFound:
+        print(">>> No container found. Running new instance")
 
-        print(popen(f'docker stop {container_id}').read())
-        print(popen(f'docker rmi {image_to_delete}').read())
+    new_container: Container = docker.containers.run(
+        new_image,
+        name=service_name,
+        detach=True,
+        privileged=privileged,
+        ports={iport: eport},
+        environment=variables
+    )
 
-    run: str = f'docker run -d --rm --name {service_name} -p {eport}:{iport}'
-    if privileged:
-        run += ' --privileged'
-    for key, value in variables.items():
-        run += f" --env {key}='{value}'"
-    run += f' {image_to_pull}:{tag}'
+    print(f">>> Container {new_container.id} | {new_container.image} created")
 
-    print(run)
+    if image_to_remove is not None:
+        image_to_remove.remove()
 
-    print(popen(run).read())
     return Response(status=200)
 
 
-@service_routes.get("/stop/<service_name>")
+@service_routes.delete("/stop/<service_name>")
 def stop_service(service_name: str):
-    print(popen(f'docker stop {service_name}'))
+    docker.containers.get(service_name).stop()
+    print(">>> Stopped container")
+    return Response(status=200)
 
 
-@service_routes.get("/rmi/<full_image_name>")
+@service_routes.delete("/rmi/<full_image_name>")
 def remove_image(full_image_name: str):
-    docker_ps: str = popen('docker ps --filter "ancestor=' + full_image_name + '" --format "{{.ID}}?{{.Image}}"').read()
-    if docker_ps != "":
-        return Response(status=409)
-    popen('docker rmi ' + full_image_name)
+    if docker.images.get(full_image_name) is not None:
+        docker.images.remove(full_image_name)
+        print(f">>> Removed image {full_image_name}")
+        return Response(status=200)
+    return Response(status=404)
