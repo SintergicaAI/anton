@@ -25,7 +25,8 @@ jobs:
         uses: Legion2/swagger-ui-action@v1
         with:
           output: specs
-          spec-file: SessionServer.yaml
+          spec-file: anton.yaml
+          GITHUB_TOKEN: ${{ secrets.ANTON_TOKEN }}
 
       - name: Deploy on GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
