@@ -29,14 +29,8 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run pytest
-        uses: pavelzw/pytest-action@v2
+      - name: Run tests
         env:
           GITHUB_TOKEN: ${{ secrets.ANTON_TOKEN }}
-        with:
-          verbose: true
-          emoji: true
-          job-summary: true
-          custom-arguments: '-q'
-          click-to-expand: true
-          report-title: 'Test Report'
+        run: |
+          pytest test/
