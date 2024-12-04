@@ -1,3 +1,5 @@
+from typing import Union
+
 from github import Auth
 from github import Github
 from github.Organization import Organization
@@ -6,7 +8,7 @@ from github.Organization import Organization
 class GithubHandler:
     def __init__(self, token: str):
         self.github = Github(auth=Auth.Token(token))
-        self.org: Organization or None = None
+        self.org: Union[Organization, None] = None
 
     def __del__(self):
         self.github.close()
