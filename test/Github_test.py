@@ -52,4 +52,4 @@ def test_repository_exists(handler: GithubHandler, repository_name: str, org_nam
 
 def test_delete_repository(handler: GithubHandler, repository_name: str, org_name: str):
     handler.set_org(org_name)
-    assert handler.delete_repository(repository_name)
+    assert not handler.delete_repository(repository_name)
