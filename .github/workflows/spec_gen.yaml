@@ -14,18 +14,18 @@ jobs:
       - name: Validate spec
         uses: mpetrunic/swagger-cli-action@v1.0.0
         with:
-          command: "validate api/anton.yaml"
+          command: "validate api/michelle.yaml"
 
       - name: Build spec
         uses: mpetrunic/swagger-cli-action@v1.0.0
         with:
-          command: "bundle -o anton.yaml -t yaml api/anton.yaml"
+          command: "bundle -o michelle.yaml -t yaml api/michelle.yaml"
 
       - name: Publish spec
         uses: Legion2/swagger-ui-action@v1
         with:
           output: specs
-          spec-file: anton.yaml
+          spec-file: michelle.yaml
           GITHUB_TOKEN: ${{ secrets.ANTON_TOKEN }}
 
       - name: Deploy on GitHub Pages

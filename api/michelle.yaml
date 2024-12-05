@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
-  title: Anton
-  description: Facilita la administración de servidores y servicios
+  title: Michelle
+  description: Administra servidores y proyectos
   version: 1.0.0
 paths:
   /service:
