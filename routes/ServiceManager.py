@@ -13,7 +13,7 @@ service_routes = Blueprint("service_routes", __name__, url_prefix="/service")
 docker: DockerClient = dockerClient.from_env()
 
 
-@service_routes.get()
+@service_routes.get("/")
 def get_services():
     info: dict = {}
     containers: list[Container] = docker.containers.list()
