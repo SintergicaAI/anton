@@ -8,16 +8,6 @@ on:
         description: Version o tag de la imagen
         required: true
         default: latest
-      external_port:
-        type: number
-        description: Puerto donde el servicio será expuesto a la red
-        required: false
-        default: 81
-      internal_port:
-        type: number
-        description: Puerto donde corre el servicio dentro del contenedor
-        required: false
-        default: 8000
 
 env:
   IMAGE_NAME: ghcr.io/sintergicaai/anton
