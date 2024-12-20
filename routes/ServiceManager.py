@@ -58,7 +58,8 @@ def set_service(service_name: str):
         detach=True,
         privileged=privileged,
         ports={iport: eport},
-        environment=variables
+        environment=variables,
+        remove=True
     )
 
     print(f">>> Container {new_container.id} | {new_container.image} created")

@@ -32,10 +32,18 @@ jobs:
         uses: crazy-max/ghaction-setup-docker@v3
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          pip install -r requirements.txt
+          pip install pytest-html pytest-dependency
 
       - name: Run tests
         env:
           GITHUB_TOKEN: ${{ secrets.ANTON_TOKEN }}
         run: |
-          pytest test/
+          pytest test/ --html=./reports/$(date '+%d-%m-%y').html --self-contained-html
+
+      - name: Report tests results
+        uses: actions/upload-artifact@v4.5.0
+        with:
+          name: 'Test report'
+          path: ./reports
