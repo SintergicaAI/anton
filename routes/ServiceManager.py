@@ -1,7 +1,7 @@
 import json
 import mimetypes
-from http.client import OK, NOT_FOUND
-from typing import Optional
+from http.client import OK, NOT_FOUND, CONFLICT
+from typing import Optional, Union
 
 import docker as dockerClient
 from docker import DockerClient
@@ -39,6 +39,9 @@ def set_service(service_name: str):
     eport: str = request.args.get("eport")
     privileged: bool = request.args.get("privileged", default="0") == "1"
     variables: dict = request.json
+
+    if is_eport_used(eport):
+        return Response(status=CONFLICT)
 
     image_to_remove: Optional[Image] = None
 
@@ -91,8 +94,18 @@ def remove_image(full_image_name: str):
     return Response(status=NOT_FOUND)
 
 
-def image_already_downloaded(image_name: str, tag: str):
+def image_already_downloaded(image_name: str, tag: str) -> bool:
     for container in docker.containers.list():
         if container.image.tags[0] == image_name + ":" + tag:
+            return True
+    return False
+
+
+def is_eport_used(port: Union[int, str]) -> bool:
+    if isinstance(port, int):
+        port = str(port)
+    for container in docker.containers.list():
+        _, item = container.ports.popitem()
+        if item[0]["HostPort"] == port:
             return True
     return False
