@@ -32,7 +32,9 @@ jobs:
         uses: crazy-max/ghaction-setup-docker@v3
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          pip install -r requirements.txt
+          pip install pytest-html pytest-dependency
 
       - name: Run tests
         env:
