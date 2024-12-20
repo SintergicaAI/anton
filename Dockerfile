@@ -1,4 +1,4 @@
-FROM python:3.10.16-bullseye
+FROM python:3.10-slim-bullseye
 
 COPY . /app
 
