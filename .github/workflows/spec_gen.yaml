@@ -2,6 +2,8 @@ name: API specification generation
 
 on:
   push:
+    paths:
+      - 'api/**'
     branches:
       - main
 
