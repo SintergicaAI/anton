@@ -38,4 +38,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.ANTON_TOKEN }}
         run: |
-          pytest test/
+          pytest test/ --html=./reports/$(date '+%d-%m-%y').html --self-contained-html
+
+      - name: Report tests results
+        uses: actions/upload-artifact@v2
+        with:
+          name: 'Test report'
+          path: ./reports
