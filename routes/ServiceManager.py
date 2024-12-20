@@ -69,7 +69,7 @@ def set_service(service_name: str):
 
     print(f">>> Container {new_container.id} | {new_container.image} created")
 
-    if image_to_remove is not None and image_to_remove != image:
+    if image_to_remove is not None and image_to_remove.id != image.id:
         image_to_remove.remove()
 
     return Response(status=OK)
