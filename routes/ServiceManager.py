@@ -16,7 +16,7 @@ docker: DockerClient = dockerClient.from_env()
 @service_routes.get("/")
 def get_services():
     info: dict = {}
-    containers: list[Container] = docker.containers.list()
+    containers: list[Container] = docker.containers.list(all=True)
     for container in containers:
         info[container.name] = {
             "image": container.image.id,
