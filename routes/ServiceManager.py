@@ -8,6 +8,7 @@ from docker import DockerClient
 from docker.models.containers import Container
 from docker.models.images import Image
 from flask import Blueprint, request, Response
+from requests import HTTPError
 
 service_routes = Blueprint("service_routes", __name__, url_prefix="/service")
 docker: DockerClient = dockerClient.from_env()
@@ -16,7 +17,7 @@ docker: DockerClient = dockerClient.from_env()
 @service_routes.get("/")
 def get_services():
     info: dict = {}
-    containers: list[Container] = docker.containers.list()
+    containers: list[Container] = docker.containers.list(all=True)
     for container in containers:
         info[container.name] = {
             "image": container.image.id,
@@ -49,7 +50,7 @@ def set_service(service_name: str):
         running_container.stop()
         running_container.remove()
         print(f">>> Container {running_container.id} removed")
-    except docker.errors.NotFound:
+    except HTTPError:
         print(">>> No container found. Running new instance")
 
     new_container: Container = docker.containers.run(
