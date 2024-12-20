@@ -5,7 +5,6 @@ from flask import Flask, Response
 from flask_cors import CORS
 from routes.ServiceManager import docker
 
-from routes.RepositoryManager import repository_routes
 from routes.ServiceManager import service_routes
 
 app = Flask(__name__)
@@ -14,7 +13,6 @@ app.host = '0.0.0.0'
 app.port = 42000
 
 app.register_blueprint(service_routes)
-app.register_blueprint(repository_routes)
 
 
 @app.get('/kill')
