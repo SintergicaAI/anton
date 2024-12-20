@@ -40,8 +40,12 @@ def set_service(service_name: str):
     privileged: bool = request.args.get("privileged", default="0") == "1"
     variables: dict = request.json
 
-    new_image: Image = docker.images.pull(image_to_pull, tag=tag)
     image_to_remove: Optional[Image] = None
+
+    if image_already_downloaded(image_to_pull, tag):
+        image = docker.images.get(image_to_pull + ":" + tag)
+    else:
+        image = docker.images.pull(image_to_pull, tag=tag)
 
     try:
         running_container: Container = docker.containers.get(service_name)
@@ -54,7 +58,7 @@ def set_service(service_name: str):
         print(">>> No container found. Running new instance")
 
     new_container: Container = docker.containers.run(
-        new_image,
+        image,
         name=service_name,
         detach=True,
         privileged=privileged,
@@ -65,13 +69,13 @@ def set_service(service_name: str):
 
     print(f">>> Container {new_container.id} | {new_container.image} created")
 
-    if image_to_remove is not None:
+    if image_to_remove is not None and image_to_remove.id != image.id:
         image_to_remove.remove()
 
     return Response(status=OK)
 
 
-@service_routes.delete("/stop/<service_name>")
+@service_routes.delete("/<service_name>")
 def stop_service(service_name: str):
     docker.containers.get(service_name).stop()
     print(">>> Stopped container")
@@ -85,3 +89,10 @@ def remove_image(full_image_name: str):
         print(f">>> Removed image {full_image_name}")
         return Response(status=OK)
     return Response(status=NOT_FOUND)
+
+
+def image_already_downloaded(image_name: str, tag: str):
+    for container in docker.containers.list():
+        if container.image.tags[0] == image_name + ":" + tag:
+            return True
+    return False
