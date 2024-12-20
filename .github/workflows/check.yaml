@@ -41,7 +41,7 @@ jobs:
           pytest test/ --html=./reports/$(date '+%d-%m-%y').html --self-contained-html
 
       - name: Report tests results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4.5.0
         with:
           name: 'Test report'
           path: ./reports
