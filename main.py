@@ -1,7 +1,7 @@
 import os
 import signal
 
-from flask import Flask, Response
+from flask import Flask, Response, make_response
 from flask_cors import CORS
 from routes.ServiceManager import docker
 
@@ -28,6 +28,15 @@ def kill():
 @app.get("/ping")
 def ping():
     return Response(status=200)
+
+@app.route("/", defaults={"path": ""})
+@app.route("/<path:path>", methods=["OPTIONS"])
+def prefligth(path):
+	response = make_response()
+	response.headers.add("Access-Control-Allow-Origin", "*")
+	response.headers.add('Access-Control-Allow-Headers', "*")
+	response.headers.add('Access-Control-Allow-Methods', "*")
+	return response
 
 
 if __name__ == '__main__':
