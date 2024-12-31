@@ -37,6 +37,8 @@ def set_service(service_name: str):
     tag: str = request.args.get("tag")
     iport: str = request.args.get("iport")
     eport: str = request.args.get("eport")
+    ivol: str = request.args.get("ivol", default=None)
+    evol: str = request.args.get("evol", default=None)
     privileged: bool = request.args.get("privileged", default="0") == "1"
     variables: dict = request.json
 
@@ -67,6 +69,7 @@ def set_service(service_name: str):
         privileged=privileged,
         ports={iport: eport},
         environment=variables,
+        volumes= {evol: {'bind': ivol, 'mode': 'rw'}},
         remove=True
     )
 
@@ -80,7 +83,9 @@ def set_service(service_name: str):
 
 @service_routes.delete("/<service_name>")
 def stop_service(service_name: str):
-    docker.containers.get(service_name).stop()
+    container = docker.containers.get(service_name)
+    container.stop()
+    container.remove()
     print(">>> Stopped container")
     return Response(status=OK)
 

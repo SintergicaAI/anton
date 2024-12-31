@@ -8,7 +8,7 @@ from routes.ServiceManager import docker
 from routes.ServiceManager import service_routes
 
 app = Flask(__name__)
-CORS(app, support_credentials=True)
+CORS(app, support_credentials=True, resources={r"/*": {"origins": "*"}})
 app.host = '0.0.0.0'
 app.port = 42000
 
