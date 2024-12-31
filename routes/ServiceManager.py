@@ -69,7 +69,7 @@ def set_service(service_name: str):
         privileged=privileged,
         ports={iport: eport},
         environment=variables,
-        volumes= {evol: {'bind': ivol, 'mode': 'rw'}},
+        volumes=get_volumes_config(evol, ivol),
         remove=True
     )
 
@@ -114,3 +114,9 @@ def is_eport_used(port: Union[int, str]) -> bool:
         if item[0]["HostPort"] == port:
             return True
     return False
+
+
+def get_volumes_config(evol: Union[str, None], ivol: Union[str, None]) -> Union[dict[str, dict], None]:
+    if evol is not None and ivol is not None:
+        return {evol: {'bind': ivol, 'mode': 'rw'}}
+    return None
