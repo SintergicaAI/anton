@@ -10,11 +10,14 @@ from docker.models.images import Image
 from flask import Blueprint, request, Response
 from requests import HTTPError
 
+from auth.Auth import Auth
+
 service_routes = Blueprint("service_routes", __name__, url_prefix="/service")
 docker: DockerClient = dockerClient.from_env()
 
 
 @service_routes.get("/")
+@Auth.requires_password
 def get_services():
     info: dict = {}
     containers: list[Container] = docker.containers.list(all=True)
@@ -32,6 +35,7 @@ def get_services():
 
 
 @service_routes.post("/<service_name>")
+@Auth.requires_password
 def set_service(service_name: str):
     image_to_pull: str = request.args.get("image")
     tag: str = request.args.get("tag")
@@ -41,6 +45,8 @@ def set_service(service_name: str):
     evol: str = request.args.get("evol", default=None)
     privileged: bool = request.args.get("privileged", default="0") == "1"
     variables: dict = request.json
+
+    print(image_to_pull)
 
     if is_eport_used(eport):
         return Response(status=CONFLICT)
@@ -82,6 +88,7 @@ def set_service(service_name: str):
 
 
 @service_routes.delete("/<service_name>")
+@Auth.requires_password
 def stop_service(service_name: str):
     container = docker.containers.get(service_name)
     container.stop()
@@ -91,6 +98,7 @@ def stop_service(service_name: str):
 
 
 @service_routes.delete("/rmi/<full_image_name>")
+@Auth.requires_password
 def remove_image(full_image_name: str):
     if docker.images.get(full_image_name) is not None:
         docker.images.remove(full_image_name)
