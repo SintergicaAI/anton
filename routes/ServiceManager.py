@@ -19,14 +19,15 @@ docker: DockerClient = dockerClient.from_env()
 @service_routes.get("/")
 @Auth.requires_password
 def get_services():
-    info: dict = {}
+    info: list = []
     containers: list[Container] = docker.containers.list(all=True)
     for container in containers:
-        info[container.name] = {
+        info.append({
+            "name": container.name,
             "image": container.image.id,
             "tag": container.image.tags[0],
             "status": container.status
-        }
+        })
     return Response(
         json.dumps(info),
         status=OK,
