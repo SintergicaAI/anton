@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Anton
   description: Facilita la administración de servidores y servicios
-  version: 1.0.0
+  version: 0.0.7
 paths:
   /service:
     get:
