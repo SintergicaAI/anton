@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Anton
   description: Facilita la administración de servidores y servicios
-  version: 1.0.0
+  version: 0.0.7
 paths:
   /service:
     get:
@@ -82,3 +82,9 @@ paths:
           description: El servicio ha sido creado o esta en cola de creacion
         500:
           description: Ha ocurrido un error creando el nuevo servicio
+    delete:
+      summary: Elimina una servicio
+      description: Elimina un servicio que se encuentre corriendo en el servidor y sea administrado por Anton
+      tags:
+        - Servicio
+      responses:

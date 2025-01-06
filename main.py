@@ -5,6 +5,7 @@ from flask import Flask, Response, make_response
 from flask_cors import CORS
 
 from auth.Auth import Auth
+from routes.ImageManager import image_routes
 from routes.ServiceManager import docker
 
 from routes.ServiceManager import service_routes
@@ -15,6 +16,7 @@ app.host = '0.0.0.0'
 app.port = 42000
 
 app.register_blueprint(service_routes)
+app.register_blueprint(image_routes)
 
 
 @app.get('/kill')
