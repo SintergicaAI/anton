@@ -46,8 +46,6 @@ def set_service(service_name: str):
     privileged: bool = request.args.get("privileged", default="0") == "1"
     variables: dict = request.json
 
-    print(image_to_pull)
-
     if is_eport_used(eport):
         return Response(status=CONFLICT)
 
@@ -124,7 +122,7 @@ def is_eport_used(port: Union[int, str]) -> bool:
     return False
 
 
-def get_volumes_config(evol: Union[str, None], ivol: Union[str, None]) -> Union[dict[str, dict], None]:
+def get_volumes_config(evol: Union[str, None], ivol: Union[str, None]) -> Union[dict, None]:
     if evol is not None and ivol is not None:
         return {evol: {'bind': ivol, 'mode': 'rw'}}
     return None

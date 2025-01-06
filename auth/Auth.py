@@ -9,9 +9,7 @@ class Auth:
     @staticmethod
     def requires_password(operation):
         def wrapper(*args, **kwargs):
-            password = request.headers.get("Authorization")
-            password = password.replace("Basic ", "")
-            print(os.environ.get("PASSWORD"))
+            password = request.headers.get("Authorization", "").replace("Basic ", "")
             if password != os.environ.get("PASSWORD"):
                 return Response(status=UNAUTHORIZED)
             return operation(*args, **kwargs)
