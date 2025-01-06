@@ -22,11 +22,17 @@ def get_services():
     info: list = []
     containers: list[Container] = docker.containers.list(all=True)
     for container in containers:
+        full_image: str = container.image.id
+        image: str = full_image.split(":")[0]
+        tag: str = full_image.split(":")[1]
+        e_port, i_port = get_container_ports(container)
         info.append({
             "name": container.name,
-            "image": container.image.id,
-            "tag": container.image.tags[0],
-            "status": container.status
+            "image": image,
+            "tag": tag,
+            "status": container.status,
+            "eport": e_port,
+            "iport": i_port
         })
     return Response(
         json.dumps(info),
@@ -121,6 +127,12 @@ def is_eport_used(port: Union[int, str]) -> bool:
         if item[0]["HostPort"] == port:
             return True
     return False
+
+
+def get_container_ports(container: Container) -> tuple[str, str]:
+    e_port, value = container.ports.popitem()
+    e_port = e_port.split("/")[0]
+    return e_port, value[0]["HostPort"]
 
 
 def get_volumes_config(evol: Union[str, None], ivol: Union[str, None]) -> Union[dict, None]:
