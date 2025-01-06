@@ -22,7 +22,7 @@ def get_services():
     info: list = []
     containers: list[Container] = docker.containers.list(all=True)
     for container in containers:
-        full_image: str = container.image.id
+        full_image: str = container.image.tags[0]
         image: str = full_image.split(":")[0]
         tag: str = full_image.split(":")[1]
         e_port, i_port = get_container_ports(container)
