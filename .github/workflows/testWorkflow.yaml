@@ -1,3 +1,4 @@
+name: "Make a dummy file"
 on:
   workflow_dispatch:
 
