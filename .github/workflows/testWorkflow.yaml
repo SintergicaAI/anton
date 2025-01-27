@@ -1,0 +1,14 @@
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: self-hosted
+    steps:
+      - name: Make a new file
+        run: |
+          cd /home/admin
+          mkdir newDir
+          cd newDir
+          touch newFile.txt
+          echo "This is a new file" > newFile.txt
