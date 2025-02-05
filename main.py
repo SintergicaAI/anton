@@ -46,6 +46,15 @@ def prefligth(path):
     return response
 
 
+@app.before_request
+def login_ghcr():
+    docker.login(
+        os.environ.get("GITHUB_LOGIN"),
+        os.environ.get("GITHUB_TOKEN"),
+        registry="https://ghcr.io"
+    )
+
+
 if __name__ == '__main__':
     docker.login(
         os.environ.get("GITHUB_LOGIN"),
