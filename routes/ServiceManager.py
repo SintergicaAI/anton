@@ -51,10 +51,16 @@ def set_service(service_name: str):
     ivol: str = request.args.get("ivol", default=None)
     evol: str = request.args.get("evol", default=None)
     privileged: bool = request.args.get("privileged", default="0") == "1"
+    replace: bool = request.args.get("replace", default="0") == "1"
     variables: dict = request.json
 
     if is_eport_used(eport):
-        return Response(status=CONFLICT)
+        print(">>> Port already used")
+        container = get_container_by_external_port(eport)
+        if container is not None and replace and stop_service(service_name).status_code == OK:
+            print(f">>> Replacing {container.name} with {service_name}")
+        else:
+            return Response(status=CONFLICT)
 
     image_to_remove: Optional[Image] = None
 
@@ -138,4 +144,12 @@ def get_container_ports(container: Container) -> tuple[str, str]:
 def get_volumes_config(evol: Union[str, None], ivol: Union[str, None]) -> Union[dict, None]:
     if evol is not None and ivol is not None:
         return {evol: {'bind': ivol, 'mode': 'rw'}}
+    return None
+
+
+def get_container_by_external_port(port: str) -> Union[None, Container]:
+    for container in docker.containers.list():
+        _, item = container.ports.popitem()
+        if item[0]["HostPort"] == port:
+            return container
     return None
