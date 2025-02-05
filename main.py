@@ -47,5 +47,10 @@ def prefligth(path):
 
 
 if __name__ == '__main__':
+    docker.login(
+        os.environ.get("GITHUB_LOGIN"),
+        os.environ.get("GITHUB_TOKEN"),
+        registry="https://ghcr.io"
+    )
     app.debug = True
     app.run(app.host, app.port)
